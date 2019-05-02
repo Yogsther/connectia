@@ -1,3 +1,5 @@
+/* Connectia - server, Olle Kaiser 2019 */
+
 'use strict';
 const bp = require("body-parser");
 
@@ -24,10 +26,13 @@ module.exports = class Connectia {
 
         this.events = []
     }
+    /* Recivies a raw post request and handles it. */
     call(req, res) {
         try {
             var request = req.body
+            // Make sure event exists, otherwise ignore it.
             if (this.events[request.callsign]) {
+                // Call event with the message and an emitter function
                 this.events[request.callsign](request.message, (callsign, message) => {
                     res.end(JSON.stringify({
                         callsign: callsign,
@@ -37,6 +42,11 @@ module.exports = class Connectia {
             }
         } catch (e) {}
     }
+    /**
+     * Create an event listener
+     * @param {*} callsign Name of the messsage
+     * @param {*} _callback Callback function (message, emit)
+     */
     on(callsign, _callback) {
         this.events[callsign] = _callback
     }
