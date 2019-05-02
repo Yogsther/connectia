@@ -6,7 +6,7 @@
 
 For client side, provide Connectia.js in the ```<head>``` of your document:
 ```html
-<script src="TODO"></script>
+<script src="https://connectia.ygstr.com/public/Connectia.js"></script>
 ```
 
 
@@ -63,8 +63,8 @@ The example server is index.js, and the example client is /public
 ### Server
 1. Install body parser and express ```$ npm install body-parser express ```
 2. Setup an express server (see index.js for a great example)
-3. Download Connectia.js and require it (see examples above)
+3. Download [Connectia.js](https://connectia.ygstr.com/Connectia.js)Connectia.js and require it (see examples above)
 
 ### Client
-1. Link client version of Connectia in the ```<head>```, ```<script src="TODO"></script>```
+1. Link client version of Connectia in the ```<head>```, ```<script src="https://connectia.ygstr.com/public/Connectia.js"></script>```
 2. Create a new instance of it,  ```var con = new Connectia()```
