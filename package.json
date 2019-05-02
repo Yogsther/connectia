@@ -1,0 +1,29 @@
+{
+  "name": "connectia",
+  "version": "1.0.0",
+  "description": "Simple & Lightweight ajax framework for nodeJS",
+  "main": "Connectia.js",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "express": "^4.16.4",
+    "file-system": "^2.2.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Yogsther/connectia.git"
+  },
+  "keywords": [
+    "nodejs",
+    "ajax"
+  ],
+  "author": "Olle Kaiser",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Yogsther/connectia/issues"
+  },
+  "homepage": "https://github.com/Yogsther/connectia#readme"
+}
