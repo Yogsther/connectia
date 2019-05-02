@@ -1,6 +1,6 @@
 ![img](img/banner.png)
 
-# Connectia, Simple & Lightweight ajax framework for nodeJS.
+# Connectia | Simple & Lightweight ajax framework for nodeJS.
 
 ## Usage, Client
 
