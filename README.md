@@ -29,7 +29,7 @@ con.on("login", (message, emit) => {
 For client side, provide Connectia.js in the ```<head>``` of your document:
 ```html
 <!-- Connectia CDN -->
-<script src="https://connectia.ygstr.com/public/Connectia.js"></script>
+<script src="https://connectia.ygstr.com/client/Connectia.js"></script>
 ```
 
 
