@@ -1,6 +1,6 @@
 {
   "name": "connectia",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "Simple & Lightweight ajax framework for nodeJS",
   "main": "Connectia.js",
   "dependencies": {
