@@ -2,29 +2,53 @@
 
 'use strict';
 const bp = require("body-parser");
+const express = require("express");
+const http = require("http");
 
 module.exports = class Connectia {
     /**
      * Create a new instance of Connectia
-     * @param {*} app Express app to be binded.
+     * @param {String} static Location of your static files
+     * @param {*} port Port to run on, default 80
+     * @param {Object} options Express app options e.g SSL
      */
-    constructor(app) {
-        if (!app) {
-            throw new Error("App is not provided. (Undefined)")
-        }
+    constructor(static_location, port = 80, options = {}) {
 
-        // $ npm install body-parser
-        app.use(bp.json())
-        app.use(bp.urlencoded({
+        if (!static_location) throw new TypeError("Static not provided. It needs to be the location for your static files.")
+
+        this.app = express();
+        this.app.use(bp.json())
+        this.app.use(bp.urlencoded({
             extended: true
         }))
 
+        this.app.use(function (req, res, next) {
+            if (req.url.indexOf("?") !== -1) {
+                req.url = req.url.split("?")[0];
+            }
+            if (req.path.indexOf('.') === -1) {
+                req.url += '.html';
+                next();
+            } else
+                next();
+        });
+
+        this.app.use(express.static(static_location));
+        this.app.get("*", function (req, res) {
+            res.sendFile(static_location + '/index.html');
+        })
+
+        this.server = http.createServer(options, this.app);
+        this.server.listen(port);
+
         // Bind post in express to Connectia
-        app.post('/connectia.html', (req, res) => {
+        this.app.post('/connectia.html', (req, res) => {
             this.call(req, res)
         })
 
         this.events = []
+
+        console.log(`Connectia started on port: ${port}`)
     }
     /* Recivies a raw post request and handles it. */
     call(req, res) {

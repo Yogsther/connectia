@@ -10,8 +10,8 @@ Check out a full example here https://github.com/Yogsther/connectia-example
 
 ```js
 const Connectia = require("connectia")
-// Create new instance of Connectia, provide app from your express server
-const con = new Connectia(app);
+// Create new instance of Connectia, with the path to your static files
+const con = new Connectia(__dirname + "/client");
 
 /* Example code */
 con.on("login", (message, emit) => {

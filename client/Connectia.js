@@ -5,7 +5,8 @@ class Connectia {
      * Create a new instance of Connectia
      * @param {*} ip IP Adress to connect to. Optional, leave it blank and the host name will be used! 
      */
-    constructor(ip = location.href.substr(0, location.href.indexOf(location.pathname))) {
+    constructor(ip) {
+        if(!ip) throw new TypeError("No IP Provided!");
         this.events = [];
         this.ip = ip;
 
