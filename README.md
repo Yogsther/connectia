@@ -4,23 +4,22 @@
 
 ## Usage, Server
 
-Check out a full example here https://github.com/Yogsther/connectia-example
+Check out a full example here with a cookie-token-auth system https://github.com/Yogsther/connectia-example
 
     npm i connectia
 
 ```js
+// Require Connectia
 const Connectia = require("connectia")
 // Create new instance of Connectia, with the path to your static files
-const con = new Connectia(__dirname + "/client");
+// i.e your css, js and images
+const con = new Connectia(__dirname + "/cdn");
 
-/* Example code */
-con.on("login", (message, emit) => {
-    // Get user info from mysql for example
-    var user = getUser(message.username)
-    // Send information to the client
-    emit("login_success", {
-        username: message.username
-    })
+// Server creates a listener with the callsign "get_user"
+con.on("get_user", (message, emit) => {
+    // Server gets the user via an example function: get_user
+    // then sends that object back to the client
+    emit("user", get_user(message.username))
 })
 ```
 
@@ -32,20 +31,18 @@ For client side, provide Connectia.js in the ```<head>``` of your document:
 <script src="https://connectia.ygstr.com/client/Connectia.js"></script>
 ```
 
-
 Then for your javascript, connect to the node server with a new instance of Connectia.
 ```js
 // Create new connectia instance, optionally with an IP
 var con = new Connectia();
 
-// Emit a login example
-con.emit("login", {
-    username: username,
-    password: password
-})
+// Client sends a request with the callsign "get_user" and
+// attaches a string, "Yogsther"
+con.emit("get_user", "Yogsther")
 
-// Example event
-con.on("login_success", res => {
-    console.log("Logged in as " + res.username)
+// Listener to an event with the callsign "user"
+// Client gets an object: user and the console-logs it.
+con.on("user", user => {
+    console.log(user)
 })
 ```
