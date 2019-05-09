@@ -8,13 +8,12 @@ const http = require("http");
 module.exports = class Connectia {
     /**
      * Create a new instance of Connectia
-     * @param {String} static Location of your static files
+     * @param {String} static Location of your static files (i.e, js / css / static html)
      * @param {*} port Port to run on, default 80
+     * @param {Boolean} using_staic_html If you are using static html (for pug it would be false)
      * @param {Object} options Express app options e.g SSL
      */
-    constructor(static_location, port = 80, options = {}) {
-
-        if (!static_location) throw new TypeError("Static not provided. It needs to be the location for your static files.")
+    constructor(static_location, port = 80, using_staic_html = true, options = {}) {
 
         this.app = express();
         this.app.use(bp.json())
@@ -22,21 +21,23 @@ module.exports = class Connectia {
             extended: true
         }))
 
-        this.app.use(function (req, res, next) {
+        this.app.use((req, res, next) => {
             if (req.url.indexOf("?") !== -1) {
                 req.url = req.url.split("?")[0];
             }
-            if (req.path.indexOf('.') === -1) {
+            if(req.url == "/") next();
+            else if (req.path.indexOf('.') === -1) {
                 req.url += '.html';
                 next();
-            } else
-                next();
+            } else next();
         });
 
-        this.app.use(express.static(static_location));
-        this.app.get("*", function (req, res) {
-            res.sendFile(static_location + '/index.html');
-        })
+        this.app.use(express.static(static_location))
+        if (using_staic_html) {
+            this.app.get("/", (req, res) => {
+                res.sendFile(static_location + '/index.html');
+            })
+        }
 
         this.server = http.createServer(options, this.app);
         this.server.listen(port);
@@ -61,7 +62,7 @@ module.exports = class Connectia {
                     res.end(JSON.stringify({
                         callsign: callsign,
                         message: message
-                    }))
+                    }), res);
                 })
             }
         } catch (e) {}

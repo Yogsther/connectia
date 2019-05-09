@@ -1,12 +1,12 @@
 /* Connectia - client, Olle Kaiser 2019 */
 
 class Connectia {
+    
     /**
      * Create a new instance of Connectia
      * @param {*} ip IP Adress to connect to. Optional, leave it blank and the host name will be used! 
      */
-    constructor(ip) {
-        if(!ip) throw new TypeError("No IP Provided!");
+    constructor(ip = location.protocol) {
         this.events = [];
         this.ip = ip;
 
@@ -20,6 +20,7 @@ class Connectia {
             }
         }
     }
+
     /** 
      * Send a message the the server
      * @param {*} callsign Name of the message
@@ -33,6 +34,7 @@ class Connectia {
             message: message
         }));
     }
+
     /**
      * Create a listener
      * @param {*} callsign Name of the message
