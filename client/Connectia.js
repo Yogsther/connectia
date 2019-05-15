@@ -11,6 +11,7 @@ class Connectia {
         this.ip = ip;
 
         this.XML = new XMLHttpRequest();
+        this.XML.withCredentials = true; // Send cookies with the request.
         this.XML.onreadystatechange = () => {
             if (this.XML.readyState == 4 && this.XML.status == 200) {
                 try{

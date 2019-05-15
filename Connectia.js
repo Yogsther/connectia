@@ -4,6 +4,8 @@
 const bp = require("body-parser");
 const express = require("express");
 const http = require("http");
+const colors = require("colors");
+const cookie = require("cookie-parser")
 
 module.exports = class Connectia {
     /**
@@ -20,6 +22,8 @@ module.exports = class Connectia {
         this.app.use(bp.urlencoded({
             extended: true
         }))
+
+        this.app.use(cookie());
 
         this.app.use((req, res, next) => {
             if (req.url.indexOf("?") !== -1) {
@@ -49,7 +53,14 @@ module.exports = class Connectia {
 
         this.events = []
 
-        console.log(`Connectia started on port: ${port}`)
+        console.log(`
+/~  _  _  _  _  __|_. _ 
+\\_,(_)| || |(/_(_ | |(_|
+
+... has started on port: ${port}
+  > ${(using_staic_html ? "Using" : "Not using")} static html.
+  > ${static_location}
+`.red)
     }
     /* Recivies a raw post request and handles it. */
     call(req, res) {
@@ -58,7 +69,7 @@ module.exports = class Connectia {
             // Make sure event exists, otherwise ignore it.
             if (this.events[request.callsign]) {
                 // Call event with the message and an emitter function
-                this.events[request.callsign](request.message, (callsign, message) => {
+                this.events[request.callsign](request.message, (callsign, message, req, res) => {
                     res.end(JSON.stringify({
                         callsign: callsign,
                         message: message

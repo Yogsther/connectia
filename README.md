@@ -16,9 +16,11 @@ const Connectia = require("connectia")
 const con = new Connectia(__dirname + "/cdn");
 
 // Server creates a listener with the callsign "get_user"
-con.on("get_user", (message, emit) => {
+con.on("get_user", (message, emit, req, res) => {
     // Server gets the user via an example function: get_user
     // then sends that object back to the client
+    // You could check cookies in req here or render
+    // some new pug with res.
     emit("user", get_user(message.username))
 })
 ```
