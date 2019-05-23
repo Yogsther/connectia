@@ -9,9 +9,8 @@ class Connectia {
     constructor(ip = location.protocol) {
         this.events = [];
         this.ip = ip;
-
         this.XML = new XMLHttpRequest();
-        this.XML.withCredentials = true; // Send cookies with the request.
+        
         this.XML.onreadystatechange = () => {
             if (this.XML.readyState == 4 && this.XML.status == 200) {
                 try{
@@ -27,13 +26,18 @@ class Connectia {
      * @param {*} callsign Name of the message
      * @param {*} message Content, can be any type
      */
-    emit(callsign, message){  
-        this.XML.open("POST", this.ip+"/connectia", true);
-        this.XML.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
-        this.XML.send(JSON.stringify({
+    emit(callsign, message, type = "POST"){  
+        this.XML.open(type.toUpperCase(), this.ip+"/connectia" + (type.toUpperCase() == "GET" ? "?req=" + JSON.stringify({
             callsign: callsign,
             message: message
-        }));
+        }) : ""), true);
+
+        this.XML.withCredentials = true; // Send cookies with the request.
+        this.XML.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+        this.XML.send(JSON.stringify(type.toUpperCase() !== "GET" ? {
+            callsign: callsign,
+            message: message
+        }: ""));
     }
 
     /**

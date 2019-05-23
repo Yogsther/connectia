@@ -29,7 +29,7 @@ module.exports = class Connectia {
             if (req.url.indexOf("?") !== -1) {
                 req.url = req.url.split("?")[0];
             }
-            if(req.url == "/") next();
+            if (req.url == "/") next();
             else if (req.path.indexOf('.') === -1) {
                 req.url += '.html';
                 next();
@@ -51,6 +51,13 @@ module.exports = class Connectia {
             this.call(req, res)
         })
 
+        this.app.get('/connectia.html', (req, res) => {
+            var request = req.query;
+            this.call({
+                body: JSON.parse(request.req)
+            }, res)
+        })
+
         this.events = []
 
         console.log(`
@@ -69,7 +76,7 @@ module.exports = class Connectia {
             // Make sure event exists, otherwise ignore it.
             if (this.events[request.callsign]) {
                 // Call event with the message and an emitter function
-                this.events[request.callsign](request.message, (callsign, message, req, res) => {
+                this.events[request.callsign](request.message, (callsign, message) => {
                     res.end(JSON.stringify({
                         callsign: callsign,
                         message: message
