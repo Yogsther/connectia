@@ -8,19 +8,21 @@
     <script src="client/Connectia.js"></script>
 </head>
 <body>
-    <span id="get">GET: ?</span><br>
+    <span id="post">POST: ?</span><br>
     <button id="test" onclick="test()">Run test</button>
     <script>
     
-    var con = new Connectia();
+    var con = new Connectia()
     
     function test(){
         window.getSent = Date.now()
-        con.emit("get_test", null, "get");
+        con.emit("get_test", "test")
+        con.emit("post_test", "test")
     }
 
-    con.on("get_test", res => {
-        document.getElementById("get").innerText = Math.round(res.length / 529411 * 100) / 100 + "MB, " + (Date.now() - getSent) + "ms";
+    con.on("post_test", res => {
+        console.log("post")
+        document.getElementById("post").innerText = Math.round(res.length / 529411 * 100) / 100 + "MB, " + (Date.now() - getSent) + "ms";
     })
     </script>
 </body>

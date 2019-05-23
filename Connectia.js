@@ -11,7 +11,7 @@ module.exports = class Connectia {
     /**
      * Create a new instance of Connectia
      * @param {String} static Location of your static files (i.e, js / css / static html)
-     * @param {*} port Port to run on, default 80
+     * @param {Number} port Port to run on, default 80
      * @param {Boolean} using_staic_html If you are using static html (for pug it would be false)
      * @param {Object} options Express app options e.g SSL
      */
@@ -48,14 +48,7 @@ module.exports = class Connectia {
 
         // Bind post in express to Connectia
         this.app.post('/connectia.html', (req, res) => {
-            this.call(req, res)
-        })
-
-        this.app.get('/connectia.html', (req, res) => {
-            var request = req.query;
-            this.call({
-                body: JSON.parse(request.req)
-            }, res)
+            this._call(req, res)
         })
 
         this.events = []
@@ -70,19 +63,25 @@ module.exports = class Connectia {
 `.red)
     }
     /* Recivies a raw post request and handles it. */
-    call(req, res) {
+    _call(req, res) {
         try {
             var request = req.body
             // Make sure event exists, otherwise ignore it.
-            if (this.events[request.callsign]) {
+            if (this.events[request.callsign] || (this.events["*"]) /* Fallback catch-all event */) {
                 // Call event with the message and an emitter function
-                this.events[request.callsign](request.message, (callsign, message) => {
+                this.events[!this.events[request.callsign] ? "*" : request.callsign](request.message, 
+                    /**
+                     * Emit back to the client
+                     * @param {*} callsign Title of message
+                     * @param {*} message Content to send
+                     */
+                    function emit(callsign, message) {
                     res.end(JSON.stringify({
                         callsign: callsign,
                         message: message
                     }), res);
-                })
-            }
+                }, request.callsign)
+            } 
         } catch (e) {}
     }
     /**
