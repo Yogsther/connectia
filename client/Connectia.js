@@ -8,7 +8,7 @@ class Connectia {
      */
     constructor(ip = location.protocol) {
         this.events = []
-        this.requests = {}
+        this.requests = []
         this.ip = ip
     }
 
@@ -18,16 +18,16 @@ class Connectia {
      * @param {*} message Content, can be any type
      */
     emit(callsign, message) {
-        this.requests[Object.keys(this.requests).length] = new Request(callsign, message, this)
+        this.requests.push(new Request(callsign, message, this))
     }
 
     /**
      * Create a listener
      * @param {*} callsign Name of the message
-     * @param {*} _callback Callback that includes the message
+     * @param {*} _callback Callback that includes the message and optionally the callsign as a secondary parameter
      */
     on(callsign, _callback) {
-        if(this.events[callsign]) console.warn("Override event: " + callsign)
+        if (this.events[callsign]) console.warn("Override event: " + callsign)
         this.events[callsign] = _callback
     }
 }
@@ -45,18 +45,24 @@ class Request {
             if (this.XML.readyState == 4 && this.XML.status == 200) {
                 try {
                     var response = JSON.parse(this.XML.responseText)
-                    if (_connectia.events[response.callsign]) _connectia.events[response.callsign](response.message)
-                    
-                    delete _connectia.requests[response.callsign]; //FIXME:
+                    response = {
+                        callsign: decodeURIComponent(response.callsign),
+                        message: decodeURIComponent(response.message)
+                    }
+                    if (_connectia.events[response.callsign]) _connectia.events[response.callsign](response.message, callsign)
+                    else if (_connectia.events["*"]) _connectia.events["*"](response.message, callsign)
+
+                    _connectia.requests.splice(_connectia.requests.indexOf(this), 1)
                 } catch (e) {}
             }
         }
-
         this.XML.open("POST", _connectia.ip + "/connectia", true)
-        this.XML.setRequestHeader("Content-Type", "application/jsoncharset=UTF-8")
-        this.XML.send({
-            callsign: callsign,
-            message: message
-        })
+        this.XML.setRequestHeader("Content-Type", "application/json;charset=utf-8")
+        callsign = encodeURIComponent(callsign)
+        message = encodeURIComponent(message)
+        this.XML.send(JSON.stringify({
+            callsign,
+            message
+        }))
     }
 }

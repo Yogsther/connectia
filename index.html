@@ -8,21 +8,54 @@
     <script src="client/Connectia.js"></script>
 </head>
 <body>
-    <span id="post">POST: ?</span><br>
+    <span id="post">Run connectia payload test</span><br>
     <button id="test" onclick="test()">Run test</button>
     <script>
     
     var con = new Connectia()
-    
+
+    var runningTest = false;
     function test(){
-        window.getSent = Date.now()
-        con.emit("get_test", "test")
-        con.emit("post_test", "test")
+        if(runningTest) return;
+        runningTest = true;
+        window.send = 500
+        window.recived = 0
+        window.data = []
+        
+        con.emit(recived, Date.now())
     }
 
-    con.on("post_test", res => {
-        console.log("post")
-        document.getElementById("post").innerText = Math.round(res.length / 529411 * 100) / 100 + "MB, " + (Date.now() - getSent) + "ms";
+    con.on("*", (res, callsign) => {
+        data[Number(callsign)] = {
+            time: Date.now() - Number(res)
+        }
+        recived++;
+
+        if(recived == send){
+            runningTest = false;
+            var totalTime = 0;
+            var totalSuccess = 0;
+            var min = Infinity
+            var max = -1
+            for(var d of data){
+                if(d){
+                    totalSuccess++
+                    totalTime+=d.time
+                    if(d.time > max) max = d.time
+                    if(d.time < min) min = d.time
+                }
+            }
+            document.getElementById("post").innerText = `Requests: ${recived} / ${send}
+            Avg: ${Math.round(totalTime/totalSuccess*100)/100}ms
+            Min: ${min}ms
+            Max: ${max}ms
+            `;
+        } else {
+            document.getElementById("post").innerText = `Running test... ${recived} / ${send}` 
+            con.emit(this.recived, Date.now())
+            window.sent++;
+        }
+        
     })
     </script>
 </body>

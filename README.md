@@ -2,6 +2,15 @@
 
 # Connectia | Simple & Lightweight ajax framework for nodeJS.
 
+Simple webserver with ajax support, powered by Express.
+
+**Features**
+* Easy and intuative ajax features
+* JSON and URI encoded for sending any variable type
+* Support for special characters (åäö) in contents
+* Minimal code required to get started
+* Lightweight
+
 ## Usage, Server
 
 Check out a full example here with a cookie-token-auth system https://github.com/Yogsther/connectia-example
@@ -16,11 +25,9 @@ const Connectia = require("connectia")
 const con = new Connectia(__dirname + "/cdn");
 
 // Server creates a listener with the callsign "get_user"
-con.on("get_user", (message, emit, req, res) => {
+con.on("get_user", (message, emit) => {
     // Server gets the user via an example function: get_user
     // then sends that object back to the client
-    // You could check cookies in req here or render
-    // some new pug with res.
     emit("user", get_user(message.username))
 })
 ```
@@ -45,6 +52,6 @@ con.emit("get_user", "Yogsther")
 // Listener to an event with the callsign "user"
 // Client gets an object: user and the console-logs it.
 con.on("user", user => {
-    console.log(user)
+    
 })
 ```

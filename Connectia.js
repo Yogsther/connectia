@@ -1,10 +1,10 @@
 /* Connectia - server, Olle Kaiser 2019 */
 
-'use strict';
-const bp = require("body-parser");
-const express = require("express");
-const http = require("http");
-const colors = require("colors");
+'use strict'
+const bp = require("body-parser")
+const express = require("express")
+const http = require("http")
+const colors = require("colors")
 const cookie = require("cookie-parser")
 
 module.exports = class Connectia {
@@ -17,34 +17,35 @@ module.exports = class Connectia {
      */
     constructor(static_location, port = 80, using_staic_html = true, options = {}) {
 
-        this.app = express();
+        this.app = express()
         this.app.use(bp.json())
         this.app.use(bp.urlencoded({
             extended: true
         }))
 
-        this.app.use(cookie());
+        this.app.use(cookie())
 
         this.app.use((req, res, next) => {
             if (req.url.indexOf("?") !== -1) {
-                req.url = req.url.split("?")[0];
+                req.url = req.url.split("?")[0]
             }
-            if (req.url == "/") next();
+            if (req.url == "/") next()
             else if (req.path.indexOf('.') === -1) {
-                req.url += '.html';
-                next();
-            } else next();
-        });
+                req.url += '.html'
+                next()
+            } else next()
+        })
 
         this.app.use(express.static(static_location))
+
         if (using_staic_html) {
             this.app.get("/", (req, res) => {
-                res.sendFile(static_location + '/index.html');
+                res.sendFile(static_location + '/index.html')
             })
         }
 
-        this.server = http.createServer(options, this.app);
-        this.server.listen(port);
+        this.server = http.createServer(options, this.app)
+        this.server.listen(port)
 
         // Bind post in express to Connectia
         this.app.post('/connectia.html', (req, res) => {
@@ -53,35 +54,39 @@ module.exports = class Connectia {
 
         this.events = []
 
-        console.log(`
-/~  _  _  _  _  __|_. _ 
-\\_,(_)| || |(/_(_ | |(_|
-
-... has started on port: ${port}
+        console.log(`        
+/~  _  _  _  _  __|_. _      
+\\_,(_)| || |(/_(_ | |(_|  
+    `.red)
+console.log(`... has started on port: ${port}
   > ${(using_staic_html ? "Using" : "Not using")} static html.
   > ${static_location}
-`.red)
+`)
     }
     /* Recivies a raw post request and handles it. */
     _call(req, res) {
         try {
             var request = req.body
+            request.callsign = decodeURIComponent(request.callsign)
+            request.message = decodeURIComponent(request.message)
             // Make sure event exists, otherwise ignore it.
-            if (this.events[request.callsign] || (this.events["*"]) /* Fallback catch-all event */) {
+            if (this.events[request.callsign] || (this.events["*"] && request.callsign !== undefined) /* Fallback catch-all event */ ) {
                 // Call event with the message and an emitter function
-                this.events[!this.events[request.callsign] ? "*" : request.callsign](request.message, 
+                this.events[!this.events[request.callsign] ? "*" : request.callsign](request.message,
                     /**
                      * Emit back to the client
                      * @param {*} callsign Title of message
                      * @param {*} message Content to send
                      */
-                    function emit(callsign, message) {
-                    res.end(JSON.stringify({
-                        callsign: callsign,
-                        message: message
-                    }), res);
-                }, request.callsign)
-            } 
+                    (callsign, message) => {
+                        var content = JSON.stringify({
+                            callsign: (encodeURIComponent(callsign)),
+                            message: encodeURIComponent(message)
+                        })
+                        res.setHeader('Content-Length', content.length)
+                        res.end(content, res)
+                    }, request.callsign)
+            }
         } catch (e) {}
     }
     /**
