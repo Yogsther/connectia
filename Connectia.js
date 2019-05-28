@@ -66,9 +66,7 @@ console.log(`... has started on port: ${port}
     /* Recivies a raw post request and handles it. */
     _call(req, res) {
         try {
-            var request = req.body
-            request.callsign = decodeURIComponent(request.callsign)
-            request.message = decodeURIComponent(request.message)
+            var request = (req.body)
             // Make sure event exists, otherwise ignore it.
             if (this.events[request.callsign] || (this.events["*"] && request.callsign !== undefined) /* Fallback catch-all event */ ) {
                 // Call event with the message and an emitter function
@@ -79,11 +77,12 @@ console.log(`... has started on port: ${port}
                      * @param {*} message Content to send
                      */
                     (callsign, message) => {
-                        var content = JSON.stringify({
-                            callsign: (encodeURIComponent(callsign)),
-                            message: encodeURIComponent(message)
-                        })
-                        res.setHeader('Content-Length', content.length)
+                        var content = encodeURIComponent(JSON.stringify({
+                            callsign,
+                            message
+                        }))
+                        console.log(content, decodeURIComponent(content))
+                        //res.setHeader('Content-Length', content.length)
                         res.end(content, res)
                     }, request.callsign)
             }
@@ -95,6 +94,7 @@ console.log(`... has started on port: ${port}
      * @param {*} _callback Callback function (message, emit)
      */
     on(callsign, _callback) {
+        if(this.events[callsign]) console.warn(`Warning: event: ${callsign} already exists.`)
         this.events[callsign] = _callback
     }
 }

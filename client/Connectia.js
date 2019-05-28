@@ -44,22 +44,16 @@ class Request {
         this.XML.onreadystatechange = () => {
             if (this.XML.readyState == 4 && this.XML.status == 200) {
                 try {
-                    var response = JSON.parse(this.XML.responseText)
-                    response = {
-                        callsign: decodeURIComponent(response.callsign),
-                        message: decodeURIComponent(response.message)
-                    }
+                    var response = JSON.parse(decodeURIComponent((this.XML.responseText)))
+
                     if (_connectia.events[response.callsign]) _connectia.events[response.callsign](response.message, callsign)
                     else if (_connectia.events["*"]) _connectia.events["*"](response.message, callsign)
-
                     _connectia.requests.splice(_connectia.requests.indexOf(this), 1)
                 } catch (e) {}
             }
         }
         this.XML.open("POST", _connectia.ip + "/connectia", true)
         this.XML.setRequestHeader("Content-Type", "application/json;charset=utf-8")
-        callsign = encodeURIComponent(callsign)
-        message = encodeURIComponent(message)
         this.XML.send(JSON.stringify({
             callsign,
             message

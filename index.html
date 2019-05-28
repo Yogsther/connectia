@@ -9,6 +9,7 @@
 </head>
 <body>
     <span id="post">Run connectia payload test</span><br>
+    <span id="word-test">Word test: </span><br>
     <button id="test" onclick="test()">Run test</button>
     <script>
     
@@ -25,6 +26,10 @@
         con.emit(recived, Date.now())
     }
 
+    con.emit("word-test", {word: "Wörd/_?[]<'>~¿"})
+    con.on("word-test", res => {
+        document.getElementById("word-test").innerText += res.word;
+    })
     con.on("*", (res, callsign) => {
         data[Number(callsign)] = {
             time: Date.now() - Number(res)
